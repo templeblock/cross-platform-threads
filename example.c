@@ -15,6 +15,7 @@ int main() {
 
 	for (int i = 0; i < 16; i++) {
 		mb_thread_join(&threads[i]);
+		mb_thread_destroy(&threads[i]);
 	}
 
 	return 0;
