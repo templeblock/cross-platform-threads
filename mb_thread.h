@@ -7,8 +7,7 @@
 		typedef LPVOID MBThreadArg;
 		typedef LPTHREAD_START_ROUTINE MBThreadFunc;
 		
-		#define MB_THREAD_FUNC(name) DWORD __stdcall name(MBThreadArg arg)
-		#define MB_THREAD_RETURN do return 0; while (0)
+		#define MB_THREAD_HANDLER(name) DWORD __stdcall name(MBThreadArg arg)
 	#elif defined(_POSIX_SOURCE)
 		#include <pthread.h>
 
@@ -16,8 +15,7 @@
 		typedef void *MBThreadArg;
 		typedef void *(*MBThreadFunc)(MBThreadArg);
 		
-		#define MB_THREAD_FUNC(name) void *name(MBThreadArg arg)
-		#define MB_THREAD_RETURN do return NULL; while (0)
+		#define MB_THREAD_HANDLER(name) void *name(MBThreadArg arg)
 	#else
 		#warning "threads are not implemented for the target platform so the code will run synchronously"
 
@@ -25,11 +23,10 @@
 		typedef void *MBThreadArg;
 		typedef void *(*MBThreadFunc)(MBThreadArg);
 		
-		#define MB_THREAD_FUNC(name) void *name(MBThreadArg arg)
-		#define MB_THREAD_RETURN do return NULL; while (0)
+		#define MB_THREAD_HANDLER(name) void *name(MBThreadArg arg)
 	#endif
 
-	void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg);
+	void mb_thread_spawn(MBThread *thread, MBThreadFunc handler, MBThreadArg arg);
 	void mb_thread_join(MBThread *thread);
 #endif
 
@@ -40,9 +37,9 @@
 	#endif
 
 	#ifdef _WIN32
-		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
-			MB_THREAD_ASSERT(func != NULL);
-			*thread = CreateThread(NULL, 0, func, arg, 0, NULL);
+		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc handler, MBThreadArg arg) {
+			MB_THREAD_ASSERT(handler != NULL);
+			*thread = CreateThread(NULL, 0, handler, arg, 0, NULL);
 		}
 
 		inline void mb_thread_join(MBThread *thread) {
@@ -50,9 +47,9 @@
 			MB_THREAD_ASSERT(result == WAIT_OBJECT_0);
 		}
 	#elif defined(_POSIX_SOURCE)
-		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
-			MB_THREAD_ASSERT(func != NULL);
-			int result = pthread_create(thread, NULL, func, arg);
+		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc handler, MBThreadArg arg) {
+			MB_THREAD_ASSERT(handler != NULL);
+			int result = pthread_create(thread, NULL, handler, arg);
 			MB_THREAD_ASSERT(result == 0);
 		}
 
@@ -61,9 +58,9 @@
 			MB_THREAD_ASSERT(result == 0);
 		}
 	#else
-		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
-			MB_THREAD_ASSERT(func != NULL);
-			func(arg);
+		inline void mb_thread_spawn(MBThread *thread, MBThreadFunc handler, MBThreadArg arg) {
+			MB_THREAD_ASSERT(handler != NULL);
+			handler(arg);
 			return NULL;
 		}
 

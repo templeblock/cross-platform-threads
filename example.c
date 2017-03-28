@@ -1,9 +1,9 @@
 #define MB_THREAD_IMPL
 #include "mb_thread.h"
 
-MB_THREAD_FUNC(worker) {
+MB_THREAD_HANDLER(worker) {
 	// do work...
-	MB_THREAD_RETURN;
+	return 0;
 }
 
 int main() {
