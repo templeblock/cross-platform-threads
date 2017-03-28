@@ -1,4 +1,5 @@
 # Single-file, cross-platform threads
+This library provides a simple interface for cross-platform threads and mutexes without any overhead over using the native operating system APIs.
 
 1. Define a handler
 ```
