@@ -3,7 +3,7 @@ This library provides a simple interface for cross-platform threads and mutexes 
 
 ## Threads
 
-1. Define a handler
+1. Define a function
 ```
 MB_THREAD_HANDLER(handler) {
   // code here...
