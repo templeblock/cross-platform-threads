@@ -5,7 +5,7 @@ This library provides a simple interface for cross-platform threads and mutexes 
 
 1. Define a function
 ```
-MB_THREAD_HANDLER(handler) {
+MB_THREAD_FUNC(worker) {
   // code here...
   return 0;
 }
@@ -14,7 +14,7 @@ MB_THREAD_HANDLER(handler) {
 2. Spawn a thread
 ```
 MBThread thread;
-mb_thread_spawn(&thread, handler, NULL);
+mb_thread_spawn(&thread, worker, NULL);
 ```
 
 3. Join with the thread
