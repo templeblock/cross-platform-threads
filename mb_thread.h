@@ -29,15 +29,9 @@ Disable mutexes:
 License
 -------
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+This software is in the public domain. Where that dedication is not
+recognized, you are granted a perpetual, irrevocable license to copy and
+modify this file as you see fit.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -77,7 +71,7 @@ THE SOFTWARE.
 		typedef LPVOID MBThreadArg;
 		typedef LPTHREAD_START_ROUTINE MBThreadFunc;
 		
-		#define MB_THREAD_DEF_FUNC(name) DWORD __stdcall name(MBThreadArg arg)
+		#define MB_THREAD_FUNC(name) DWORD __stdcall name(MBThreadArg arg)
 
 		typedef HANDLE MBMutex;
 	#elif defined(_POSIX_SOURCE)
@@ -87,7 +81,7 @@ THE SOFTWARE.
 		typedef void *MBThreadArg;
 		typedef void *(*MBThreadFunc)(MBThreadArg);
 		
-		#define MB_THREAD_DEF_FUNC(name) void *name(MBThreadArg arg)
+		#define MB_THREAD_FUNC(name) void *name(MBThreadArg arg)
 
 		typedef pthread_mutex_t MBMutex;
 	#else
@@ -97,12 +91,12 @@ THE SOFTWARE.
 		typedef void *MBThreadArg;
 		typedef void *(*MBThreadFunc)(MBThreadArg);
 		
-		#define MB_THREAD_DEF_FUNC(name) void *name(MBThreadArg arg)
+		#define MB_THREAD_FUNC(name) void *name(MBThreadArg arg)
 
 		typedef int MBMutex;
 	#endif
 
-	MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void);
+	MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_num_cores(void);
 	
 	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg);
 	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join(MBThread *thread);
@@ -133,7 +127,7 @@ THE SOFTWARE.
 	#endif
 
 	#ifdef _WIN32
-		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_num_cores(void) {
 			SYSTEM_INFO sysinfo;
 			GetSystemInfo(&sysinfo);
 			return sysinfo.dwNumberOfProcessors;
@@ -211,7 +205,7 @@ THE SOFTWARE.
 			}
 		#endif
 	#elif defined(_POSIX_SOURCE)
-		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_num_cores(void) {
 			return sysconf(_SC_NPROCESSORS_ONLN);
 		}
 
@@ -273,7 +267,7 @@ THE SOFTWARE.
 			}
 		#endif
 	#else
-		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_num_cores(void) {
 			return 1;
 		}
 
