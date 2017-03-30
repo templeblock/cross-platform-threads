@@ -50,6 +50,10 @@ THE SOFTWARE.
 
 #ifndef MB_THREAD_H
 #define MB_THREAD_H
+	#ifdef __cplusplus
+		extern "C" {
+	#endif
+
 	#ifndef MB_THREAD_NO_INLINE
 		#if _MSC_VER && !__INTEL_COMPILER
 			#define MB_THREAD_INLINE __inline
@@ -112,9 +116,17 @@ THE SOFTWARE.
 		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock_multi(size_t n, MBMutex *mutex);
 		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex);
 	#endif
+
+	#ifdef __cplusplus
+		}
+	#endif
 #endif
 
 #ifdef MB_THREAD_IMPL
+	#ifdef __cplusplus
+		extern "C" {
+	#endif
+
 	#ifndef MB_THREAD_ASSERT
 		#include <assert.h>
 		#define MB_THREAD_ASSERT(cond) assert(cond)
@@ -297,5 +309,9 @@ THE SOFTWARE.
 			MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex) {
 			}
 		#endif
+	#endif
+	
+	#ifdef __cplusplus
+		}
 	#endif
 #endif
