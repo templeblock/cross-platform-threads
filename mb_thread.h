@@ -1,9 +1,19 @@
 #ifndef MB_THREAD_H
 #define MB_THREAD_H
-	#if _MSC_VER && !__INTEL_COMPILER
-		#define MB_THREAD_INLINE __inline
+	#ifndef MB_THREAD_NO_INLINE
+		#if _MSC_VER && !__INTEL_COMPILER
+			#define MB_THREAD_INLINE __inline
+		#else
+			#define MB_THREAD_INLINE inline
+		#endif
 	#else
-		#define MB_THREAD_INLINE inline
+		#define MB_THREAD_INLINE
+	#endif
+
+	#ifndef MB_THREAD_USE_STATIC
+		#define MB_THREAD_STATIC static
+	#else
+		#define MB_THREAD_STATIC
 	#endif
 
 	#ifdef _WIN32
@@ -38,18 +48,18 @@
 		typedef int MBMutex;
 	#endif
 
-	unsigned int mb_get_num_cores(void);
+	MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void);
 	
-	void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg);
-	void mb_thread_join(MBThread *thread);
-	void mb_thread_join_multi(size_t n, MBThread *threads);
-	void mb_thread_destroy(MBThread *thread);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join(MBThread *thread);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join_multi(size_t n, MBThread *threads);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_destroy(MBThread *thread);
 
-	void mb_mutex_init(MBMutex *mutex);
-	void mb_mutex_destroy(MBMutex *mutex);
-	void mb_mutex_lock(MBMutex *mutex);
-	void mb_mutex_lock_multi(size_t n, MBMutex *mutex);
-	void mb_mutex_unlock(MBMutex *mutex);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_init(MBMutex *mutex);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_destroy(MBMutex *mutex);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock(MBMutex *mutex);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock_multi(size_t n, MBMutex *mutex);
+	MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex);
 #endif
 
 #ifdef MB_THREAD_IMPL
@@ -59,27 +69,27 @@
 	#endif
 
 	#ifdef _WIN32
-		MB_THREAD_INLINE unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
 			SYSTEM_INFO sysinfo;
 			GetSystemInfo(&sysinfo);
 			return sysinfo.dwNumberOfProcessors;
 		}
 
-		MB_THREAD_INLINE void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
 			MB_THREAD_ASSERT(thread != NULL);
 			MB_THREAD_ASSERT(func != NULL);
 			*thread = CreateThread(NULL, 0, func, arg, 0, NULL);
 			MB_THREAD_ASSERT(*thread != NULL);
 		}
 
-		MB_THREAD_INLINE void mb_thread_join(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join(MBThread *thread) {
 			MB_THREAD_ASSERT(thread != NULL);
 			MB_THREAD_ASSERT(*thread != NULL);
 			DWORD result = WaitForSingleObject(*thread, INFINITE);
 			MB_THREAD_ASSERT(result == WAIT_OBJECT_0);
 		}
 		
-		MB_THREAD_INLINE void mb_thread_join_multi(size_t n, MBThread *threads) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join_multi(size_t n, MBThread *threads) {
 			if (n > 0) {
 				MB_THREAD_ASSERT(threads != NULL);
 				DWORD result = WaitForMultipleObjects((DWORD)n, threads, TRUE, INFINITE);
@@ -87,7 +97,7 @@
 			}
 		}
 
-		MB_THREAD_INLINE void mb_thread_destroy(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_destroy(MBThread *thread) {
 			MB_THREAD_ASSERT(thread != NULL);
 			MB_THREAD_ASSERT(*thread != NULL);
 			BOOL result = CloseHandle(*thread);
@@ -97,13 +107,13 @@
 			#endif
 		}
 
-		MB_THREAD_INLINE void mb_mutex_init(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_init(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			*mutex = CreateMutex(NULL, FALSE, NULL);
 			MB_THREAD_ASSERT(*mutex != NULL);
 		}
 		
-		MB_THREAD_INLINE void mb_mutex_destroy(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_destroy(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			MB_THREAD_ASSERT(*mutex != NULL);
 			BOOL result = CloseHandle(mutex);
@@ -113,14 +123,14 @@
 			#endif
 		}
 
-		MB_THREAD_INLINE void mb_mutex_lock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			MB_THREAD_ASSERT(*mutex != NULL);
 			DWORD result = WaitForSingleObject(*mutex, INFINITE);
 			MB_THREAD_ASSERT(result == WAIT_OBJECT_0);
 		}
 		
-		MB_THREAD_INLINE void mb_mutex_lock_multi(size_t n, MBThread *mutexes) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock_multi(size_t n, MBThread *mutexes) {
 			MB_THREAD_ASSERT(mutexes != NULL);
 			if (n > 0) {
 				DWORD result = WaitForMultipleObjects((DWORD)n, mutexes, TRUE, INFINITE);
@@ -128,30 +138,30 @@
 			}
 		}
 
-		MB_THREAD_INLINE void mb_mutex_unlock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			MB_THREAD_ASSERT(*mutex != NULL);
 			BOOL result = ReleaseMutex(*mutex);
 			MB_THREAD_ASSERT(result);
 		}
 	#elif defined(_POSIX_SOURCE)
-		MB_THREAD_INLINE unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
 			return sysconf(_SC_NPROCESSORS_ONLN);
 		}
 
-		MB_THREAD_INLINE void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
 			MB_THREAD_ASSERT(func != NULL);
 			int result = pthread_create(thread, NULL, func, arg);
 			MB_THREAD_ASSERT(result == 0);
 		}
 
-		MB_THREAD_INLINE	void mb_thread_join(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join(MBThread *thread) {
 			MB_THREAD_ASSERT(thread != NULL);
 			int result = pthread_join(*thread, NULL);
 			MB_THREAD_ASSERT(result == 0);
 		}
 		
-		MB_THREAD_INLINE void mb_thread_join_multi(size_t n, MBThread *threads) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join_multi(size_t n, MBThread *threads) {
 			while (n > 0) {
 				mb_thread_join(threads);
 				threads++;
@@ -159,28 +169,28 @@
 			}
 		}
 
-		MB_THREAD_INLINE void mb_thread_destroy(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_destroy(MBThread *thread) {
 		}
 
-		MB_THREAD_INLINE void mb_mutex_init(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_init(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			int result = pthread_mutex_init(mutex, NULL);
 			MB_THREAD_ASSERT(result == 0);
 		}
 		
-		MB_THREAD_INLINE void mb_mutex_destroy(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_destroy(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			int result = pthread_mutex_destroy(mutex);
 			MB_THREAD_ASSERT(result == 0);
 		}
 
-		MB_THREAD_INLINE void mb_mutex_lock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			int result = pthread_mutex_lock(mutex);
 			MB_THREAD_ASSERT(result == 0);
 		}
 		
-		MB_THREAD_INLINE void mb_mutex_lock_multi(size_t n, MBMutex *mutexes) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock_multi(size_t n, MBMutex *mutexes) {
 			MB_THREAD_ASSERT(mutexes != NULL);
 			while (n > 0) {
 				mb_mutex_lock(mutexes);
@@ -189,44 +199,44 @@
 			}
 		}
 
-		MB_THREAD_INLINE void mb_mutex_unlock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex) {
 			MB_THREAD_ASSERT(mutex != NULL);
 			int result = pthread_mutex_unlock(mutex);
 			MB_THREAD_ASSERT(result == 0);
 		}
 	#else
-		MB_THREAD_INLINE unsigned int mb_get_num_cores(void) {
+		MB_THREAD_INLINE MB_THREAD_STATIC unsigned int mb_get_num_cores(void) {
 			return 1;
 		}
 
-		MB_THREAD_INLINE void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_spawn(MBThread *thread, MBThreadFunc func, MBThreadArg arg) {
 			MB_THREAD_ASSERT(func != NULL);
 			func(arg);
 			return NULL;
 		}
 
-		MB_THREAD_INLINE void mb_thread_join(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join(MBThread *thread) {
 		}
 
-		MB_THREAD_INLINE void mb_thread_join_multi(size_t n, MBThread *threads) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_join_multi(size_t n, MBThread *threads) {
 		}
 		
-		MB_THREAD_INLINE void mb_thread_destroy(MBThread *thread) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_thread_destroy(MBThread *thread) {
 		}
 
-		MB_THREAD_INLINE void mb_mutex_init(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_init(MBMutex *mutex) {
 		}
 		
-		MB_THREAD_INLINE void mb_mutex_destroy(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_destroy(MBMutex *mutex) {
 		}
 
-		MB_THREAD_INLINE void mb_mutex_lock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock(MBMutex *mutex) {
 		}
 
-		MB_THREAD_INLINE void mb_mutex_lock_multi(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_lock_multi(MBMutex *mutex) {
 		}
 
-		MB_THREAD_INLINE void mb_mutex_unlock(MBMutex *mutex) {
+		MB_THREAD_INLINE MB_THREAD_STATIC void mb_mutex_unlock(MBMutex *mutex) {
 		}
 	#endif
 #endif

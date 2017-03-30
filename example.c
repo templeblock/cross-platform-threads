@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#define MB_THREAD_USE_STATIC
 #define MB_THREAD_IMPL
 #include "mb_thread.h"
 
