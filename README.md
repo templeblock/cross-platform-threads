@@ -5,7 +5,7 @@ This library provides a simple interface for cross-platform threads and mutexes 
 
 1. Define a function
 ```
-MB_THREAD_FUNC(worker) {
+MB_THREAD_DEF_FUNC(worker) {
   // code here...
   return 0;
 }
