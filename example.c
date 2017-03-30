@@ -3,7 +3,7 @@
 #define MB_THREAD_IMPL
 #include "mb_thread.h"
 
-MB_THREAD_FUNC(worker) {
+MB_THREAD_DEF_FUNC(worker) {
 	// do work...
 	return 0;
 }
