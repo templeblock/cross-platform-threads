@@ -85,7 +85,7 @@ THE SOFTWARE.
 
 		typedef pthread_mutex_t MBMutex;
 	#else
-		#warning "threads are not implemented for the target platform so the code will run sequentially"
+		#warning threads are not implemented for the target platform so the code will run sequentially
 
 		typedef void *MBThread;
 		typedef void *MBThreadArg;
