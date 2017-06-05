@@ -60,7 +60,7 @@ mutex_unlock(&mutex);
 mutex_destroy(&mutex);
 ```
 
-### Some Additional Functions
+### Additional Functions
 
 Gets the number of CPU cores
 ```c
