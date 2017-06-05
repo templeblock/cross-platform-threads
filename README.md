@@ -5,8 +5,8 @@ Cross-platform threads and mutexes without any overhead.
 
 Copy this library into a project and include the header files.
 ```c
-#include "cross-platform-threads/thread.h"
-#include "cross-platform-threads/mutex.h"
+#include "thread.h"
+#include "mutex.h"
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ Copy this library into a project and include the header files.
 
 1. Define a thread handler
 ```c
-DEF_THREAD_HANDLER(worker) {
+THREAD_DEF_HANDLER(worker) {
   // Code here...
   return 0;
 }
@@ -33,8 +33,8 @@ thread_join(&thread);
 ```
 
 4. Destroy the thread
-```
-threadc_destroy(&thread);
+```c
+thread_destroy(&thread);
 ```
 
 ### Mutexes
@@ -62,10 +62,10 @@ mutex_destroy(&mutex);
 
 ## Example
 
-The following is an example of how this library could be used in a small program.
+The following is an example of a small program using this library.
 ```c
 #include <stdlib.h>
-#include "cross-platform-threads/thread.h"
+#include "thread.h"
 
 DEF_THREAD_HANDLER(worker) {
 	// Do work...
@@ -73,7 +73,7 @@ DEF_THREAD_HANDLER(worker) {
 }
 
 int main() {
-	unsigned int thread_count = get_num_cores();
+	unsigned int thread_count = thread_get_num_cores();
 	Thread *threads = malloc(thread_count * sizeof(Thread));
 
 	for (unsigned int i = 0; i < thread_count; i++) {
