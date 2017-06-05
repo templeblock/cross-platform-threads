@@ -15,7 +15,7 @@ Copy this library into a project and include the header files.
 
 1. Define a thread handler
 ```c
-THREAD_DEF_HANDLER(worker) {
+DEF_THREAD_HANDLER(worker) {
   // Code here...
   return 0;
 }
@@ -60,6 +60,23 @@ mutex_unlock(&mutex);
 mutex_destroy(&mutex);
 ```
 
+### Some Additional Functions
+
+Gets the number of CPU cores
+```c
+unsigned int num_cores = get_num_cores();
+```
+
+Joins multiple threads
+```c
+thread_join_multi(&threads, thread_count);
+```
+
+Locks multiple mutexes
+```c
+mutex_lock_multi(&mutexes, mutex_count);
+```
+
 ## Example
 
 The following is an example of a small program using this library.
@@ -73,7 +90,7 @@ DEF_THREAD_HANDLER(worker) {
 }
 
 int main() {
-	unsigned int thread_count = thread_get_num_cores();
+	unsigned int thread_count = get_num_cores();
 	Thread *threads = malloc(thread_count * sizeof(Thread));
 
 	for (unsigned int i = 0; i < thread_count; i++) {

@@ -2,7 +2,7 @@
 #include "thread.h"
 
 #ifdef _WIN32
-	unsigned int thread_get_num_cores(void) {
+	unsigned int get_num_cores(void) {
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
 		return sysinfo.dwNumberOfProcessors;
