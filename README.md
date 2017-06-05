@@ -62,17 +62,17 @@ mutex_destroy(&mutex);
 
 ### Additional Functions
 
-Gets the number of CPU cores
+Get the number of CPU cores
 ```c
 unsigned int num_cores = get_num_cores();
 ```
 
-Joins multiple threads
+Join multiple threads
 ```c
 thread_join_multi(&threads, thread_count);
 ```
 
-Locks multiple mutexes
+Lock multiple mutexes
 ```c
 mutex_lock_multi(&mutexes, mutex_count);
 ```
